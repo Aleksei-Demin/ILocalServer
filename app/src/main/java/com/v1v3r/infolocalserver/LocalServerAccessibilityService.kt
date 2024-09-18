@@ -59,8 +59,8 @@ class LocalServerAccessibilityService : AccessibilityService() {
                             display: flex;
                             justify-content: center;
                             align-items: center;
-                            height: 90vh;
-                            font-size: 7em;
+                            height: 60vh;
+                            font-size: 4em;
                             text-align: center;
                             background-color: black;
                             color: white;
