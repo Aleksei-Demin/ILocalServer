@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Запуск сервиса вручную
-        startService(Intent(this, LocalServerService::class.java))
+        startService(Intent(this, ForegroundServerService::class.java))
 
         val serverAddressTextView: TextView = findViewById(R.id.serverAddressTextView)
         val copyAddressButton: Button = findViewById(R.id.copyAddressButton)
