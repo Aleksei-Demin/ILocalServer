@@ -40,10 +40,12 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    // Добавляем зависимость для NanoHTTPD
+    // Добавляем зависимости
     implementation("org.nanohttpd:nanohttpd:2.3.1")
     implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.0.0")
     implementation ("androidx.appcompat:appcompat:1.3.0")
+    implementation ("androidx.work:work-runtime-ktx:2.7.1")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
