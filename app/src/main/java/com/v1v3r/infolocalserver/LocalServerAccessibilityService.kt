@@ -1,7 +1,6 @@
 package com.v1v3r.infolocalserver
 
 import android.accessibilityservice.AccessibilityService
-import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import fi.iki.elonen.NanoHTTPD
@@ -59,22 +58,34 @@ class LocalServerAccessibilityService : AccessibilityService() {
                             display: flex;
                             justify-content: center;
                             align-items: center;
-                            height: 60vh;
                             font-size: 4em;
                             text-align: center;
                             background-color: black;
                             color: white;
+                            margin: 0;
+                            padding-top: 60px; /* Отступ для контента под статус-баром */
                         }
                         .value {
                             margin: 40px 0;
                         }
+                        .status-bar {
+                            position: fixed;
+                            top: 0;
+                            width: 100vw;
+                            background-color: black;
+                            color: white;
+                            padding: 20px 0;
+                            text-align: center;
+                            border-bottom: 3px solid lightgrey;
+                            z-index: 1000; /* Чтобы статус-бар был поверх другого контента */
+                        }
                     </style>
                 </head>
                 <body>
+                    <div class="status-bar">${getLocalIpAddress() + ":8080"}</div>
                     <div>
-                        <div class="value">${getLocalIpAddress() + ":8080"}</div>
                         <div class="value">CPU: $cpuTemp</div>
-                        <div class="value">Memory: $memoryUsage%</div>
+                        <div class="value">RAM: $memoryUsage</div>
                     </div>
                 </body>
                 </html>
@@ -99,11 +110,25 @@ class LocalServerAccessibilityService : AccessibilityService() {
             val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             val memoryInfo = ActivityManager.MemoryInfo()
             activityManager.getMemoryInfo(memoryInfo)
+
+            // Общая память
             val totalMemory = memoryInfo.totalMem
+
+            // Свободная память
             val availableMemory = memoryInfo.availMem
+
+            // Занятая память: Общая память - Свободная память
             val usedMemory = totalMemory - availableMemory
+
+            // Процент использования памяти
             val memoryUsagePercent = (usedMemory.toDouble() / totalMemory) * 100
-            return String.format("%.0f", memoryUsagePercent) // Без знаков после точки
+
+            // Переводим занятое количество и общую память в гигабайты
+            val usedMemoryGb = usedMemory / (1024.0 * 1024.0 * 1024.0)
+            val totalMemoryGb = totalMemory / (1024.0 * 1024.0 * 1024.0)
+
+            // Форматируем вывод
+            return String.format("%.2f GB / %.2f GB<br>(used %.0f%%)", usedMemoryGb, totalMemoryGb, memoryUsagePercent)
         }
 
         private fun getLocalIpAddress(): String {
