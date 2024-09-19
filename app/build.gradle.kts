@@ -43,6 +43,7 @@ dependencies {
     // Добавляем зависимость для NanoHTTPD
     implementation("org.nanohttpd:nanohttpd:2.3.1")
     implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.0.0")
+    implementation ("androidx.appcompat:appcompat:1.3.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -24,6 +24,12 @@ class LocalServerService : Service() {
         stopService(Intent(this, LocalServerAccessibilityService::class.java))
 
         // Запуск сервера
+        startServer()
+
+        return START_STICKY
+    }
+
+    private fun startServer() {
         server = LocalServer(8080, this)
         try {
             server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
@@ -33,8 +39,6 @@ class LocalServerService : Service() {
             Log.e("LocalServerService", "Could not start server", e)
             updateStatus("Local server is not working")
         }
-
-        return START_STICKY
     }
 
     override fun onDestroy() {
@@ -44,9 +48,6 @@ class LocalServerService : Service() {
         // Останавливаем сервер
         server.stop()
         updateStatus("Local server is not working")
-
-        // Останавливаем LocalServerAccessibilityService, если он запущен
-        stopService(Intent(this, LocalServerAccessibilityService::class.java))
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -97,7 +98,7 @@ class LocalServerService : Service() {
                     </style>
                 </head>
                 <body>
-                    <div class="status-bar">${getLocalIpAddress() + ":8080"}</div>
+                    <div class="status-bar">${getLocalIpAddress() + ":8080 (Accessibility service is off)"}</div>
                     <div>
                         <div class="value">CPU: $cpuTemp</div>
                         <div class="value">RAM: $memoryUsage</div>
