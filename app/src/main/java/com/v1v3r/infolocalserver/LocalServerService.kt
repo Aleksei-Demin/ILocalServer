@@ -1,3 +1,5 @@
+// Updated to handle both scenarios: running and stopping based on AccessibilityService status
+
 package com.v1v3r.infolocalserver
 
 import android.app.Service
@@ -19,7 +21,7 @@ class LocalServerService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("LocalServerService", "onStartCommand called")
-        server = LocalServer(8080, this) // Pass context to LocalServer
+        server = LocalServer(8080, this)
         try {
             server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
             Log.d("LocalServerService", "Server started successfully")
@@ -53,7 +55,6 @@ class LocalServerService : Service() {
             val cpuTemp = getCpuTemperature()
             val memoryUsage = getMemoryUsage()
 
-            // Format the output
             val response = """
                 <html>
                 <head>
@@ -104,7 +105,7 @@ class LocalServerService : Service() {
                 val reader = BufferedReader(FileReader("/sys/class/thermal/thermal_zone0/temp"))
                 val temp = reader.readLine().toDouble() / 1000
                 reader.close()
-                String.format("%.1f°C", temp) // One decimal place
+                String.format("%.1f°C", temp)
             } catch (e: Exception) {
                 Log.e("LocalServerService", "Could not read CPU temperature", e)
                 "N/A"
