@@ -16,10 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InfoLocalServer">
 
+        <!-- Сервис для локального сервера -->
         <service
             android:name=".LocalServerService"
             android:exported="false" />
 
+        <!-- Сервис для специальных возможностей -->
         <service
             android:name=".LocalServerAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
@@ -33,6 +35,7 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
+        <!-- Ресивер для запуска сервиса при загрузке устройства -->
         <receiver android:name=".BootReceiver"
             android:exported="true">
             <intent-filter>
@@ -40,6 +43,7 @@
             </intent-filter>
         </receiver>
 
+        <!-- Главная активность приложения -->
         <activity android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

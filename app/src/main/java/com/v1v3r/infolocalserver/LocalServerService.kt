@@ -23,11 +23,10 @@ class LocalServerService : Service() {
         try {
             server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
             Log.d("LocalServerService", "Server started successfully")
-
-            // Запуск LocalServerAccessibilityService после успешного запуска LocalServerService
-            startService(Intent(this, LocalServerAccessibilityService::class.java))
+            updateStatus("Local server is running")
         } catch (e: IOException) {
             Log.e("LocalServerService", "Could not start server", e)
+            updateStatus("Local server is not working")
         }
         return START_STICKY
     }
@@ -36,10 +35,17 @@ class LocalServerService : Service() {
         super.onDestroy()
         Log.d("LocalServerService", "onDestroy called")
         server.stop()
+        updateStatus("Local server is not working")
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    private fun updateStatus(status: String) {
+        val intent = Intent("com.v1v3r.infolocalserver.STATUS_UPDATE")
+        intent.putExtra("status", status)
+        sendBroadcast(intent)
     }
 
     private class LocalServer(port: Int, private val context: Context) : NanoHTTPD(port) {

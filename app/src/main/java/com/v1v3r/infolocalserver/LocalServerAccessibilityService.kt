@@ -24,11 +24,11 @@ class LocalServerAccessibilityService : AccessibilityService() {
         server = LocalServer(8080, this)
         try {
             server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
-            updateStatus("Local Server is running")
-            Log.d("LocalServerAccessibilityService", "Local server is running")
+            Log.d("LocalServerAccessibilityService", "Server started successfully")
+            updateStatus("Local server is running\n(Accessibility service)")
         } catch (e: IOException) {
             Log.e("LocalServerAccessibilityService", "Could not start server", e)
-            updateStatus("Local server is not working")
+            updateStatus("Local server is not working\n(Accessibility service)")
         }
     }
 
@@ -36,7 +36,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
         super.onDestroy()
         Log.d("LocalServerAccessibilityService", "onDestroy called")
         server.stop()
-        updateStatus("Local server is not working")
+        updateStatus("Local server is running")
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -58,6 +58,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
             val cpuTemp = getCpuTemperature()
             val memoryUsage = getMemoryUsage()
 
+            // Format the output
             val response = """
                 <html>
                 <head>
@@ -72,7 +73,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
                             background-color: black;
                             color: white;
                             margin: 0;
-                            padding-top: 60px; /* Отступ для контента под статус-баром */
+                            padding-top: 60px; /* Space for content below status bar */
                         }
                         .value {
                             margin: 40px 0;
@@ -86,7 +87,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
                             padding: 20px 0;
                             text-align: center;
                             border-bottom: 3px solid lightgrey;
-                            z-index: 1000; /* Чтобы статус-бар был поверх другого контента */
+                            z-index: 1000; /* Ensures the status bar is on top */
                         }
                     </style>
                 </head>
@@ -108,7 +109,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
                 val reader = BufferedReader(FileReader("/sys/class/thermal/thermal_zone0/temp"))
                 val temp = reader.readLine().toDouble() / 1000
                 reader.close()
-                String.format("%.1f°C", temp) // Один знак после точки
+                String.format("%.1f°C", temp) // One decimal place
             } catch (e: Exception) {
                 Log.e("LocalServerAccessibilityService", "Could not read CPU temperature", e)
                 "N/A"

@@ -31,5 +31,5 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:textSize="18sp"
-        android:text="Local server is not working" /> <!-- Default text -->
+        android:text="Local server is running" /> <!-- Default text -->
 </RelativeLayout>
