@@ -29,16 +29,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Запуск LocalServerService при создании MainActivity
-        startService(Intent(this, LocalServerService::class.java))
-
         val serverAddressTextView: TextView = findViewById(R.id.serverAddressTextView)
         serverStatusTextView = findViewById(R.id.serverStatusTextView)
         val copyAddressButton: Button = findViewById(R.id.copyAddressButton)
 
+        // Получение IP-адреса сервера и установка в TextView
         val serverAddress = getLocalIpAddress() + ":8080"
         serverAddressTextView.text = serverAddress
-
         Log.d("MainActivity", "Server address: $serverAddress")
 
         // Обработка нажатия на кнопку "Copy address"
@@ -46,6 +43,9 @@ class MainActivity : AppCompatActivity() {
             copyToClipboard(serverAddress)
             Toast.makeText(this, "Address copied to clipboard", Toast.LENGTH_SHORT).show()
         }
+
+        // Запуск LocalServerService при создании MainActivity
+        startService(Intent(this, LocalServerService::class.java))
 
         // Регистрируем BroadcastReceiver для получения обновлений статуса сервера
         registerReceiver(statusUpdateReceiver, IntentFilter("com.v1v3r.infolocalserver.STATUS_UPDATE"))

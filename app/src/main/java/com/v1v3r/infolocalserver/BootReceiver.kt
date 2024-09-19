@@ -5,6 +5,7 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Log
 import android.view.accessibility.AccessibilityManager
 
@@ -35,6 +36,21 @@ class BootReceiver : BroadcastReceiver() {
         for (serviceInfo in enabledServices) {
             if (serviceInfo.resolveInfo.serviceInfo.packageName == context.packageName &&
                 serviceInfo.resolveInfo.serviceInfo.name == accessibilityService.name) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    // Метод для проверки, активен ли Accessibility Service
+    private fun isAccessibilityServiceActive(context: Context, serviceClass: Class<out AccessibilityService>): Boolean {
+        val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+        val enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+
+        for (serviceInfo in enabledServices) {
+            val componentName = serviceInfo.resolveInfo.serviceInfo.packageName + "/" + serviceInfo.resolveInfo.serviceInfo.name
+            if (componentName == serviceClass.name) {
                 return true
             }
         }
