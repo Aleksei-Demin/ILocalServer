@@ -2,7 +2,6 @@ package com.v1v3r.infolocalserver
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
-import android.content.IntentFilter
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import fi.iki.elonen.NanoHTTPD
@@ -17,7 +16,6 @@ import java.net.NetworkInterface
 class LocalServerAccessibilityService : AccessibilityService() {
 
     private lateinit var server: LocalServer
-    private var isServerRunning: Boolean = false
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -26,7 +24,6 @@ class LocalServerAccessibilityService : AccessibilityService() {
         server = LocalServer(8080, this)
         try {
             server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
-            isServerRunning = true
             updateStatus("Local Server is running")
             Log.d("LocalServerAccessibilityService", "Local server is running")
         } catch (e: IOException) {
@@ -39,7 +36,6 @@ class LocalServerAccessibilityService : AccessibilityService() {
         super.onDestroy()
         Log.d("LocalServerAccessibilityService", "onDestroy called")
         server.stop()
-        isServerRunning = false
         updateStatus("Local server is not working")
     }
 

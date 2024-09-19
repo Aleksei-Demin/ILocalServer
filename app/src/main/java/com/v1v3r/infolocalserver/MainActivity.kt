@@ -1,9 +1,11 @@
 package com.v1v3r.infolocalserver
 
+import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -12,18 +14,26 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.net.Inet4Address
 import java.net.NetworkInterface
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var serverStatusTextView: TextView
+    private val statusUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val status = intent?.getStringExtra("status") ?: "Local server is not working"
+            serverStatusTextView.text = status
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Запуск сервиса вручную
-        startService(Intent(this, ForegroundServerService::class.java))
+        // Запуск LocalServerService при создании MainActivity
+        startService(Intent(this, LocalServerService::class.java))
 
         val serverAddressTextView: TextView = findViewById(R.id.serverAddressTextView)
+        serverStatusTextView = findViewById(R.id.serverStatusTextView)
         val copyAddressButton: Button = findViewById(R.id.copyAddressButton)
 
         val serverAddress = getLocalIpAddress() + ":8080"
@@ -36,6 +46,15 @@ class MainActivity : AppCompatActivity() {
             copyToClipboard(serverAddress)
             Toast.makeText(this, "Address copied to clipboard", Toast.LENGTH_SHORT).show()
         }
+
+        // Регистрируем BroadcastReceiver для получения обновлений статуса сервера
+        registerReceiver(statusUpdateReceiver, IntentFilter("com.v1v3r.infolocalserver.STATUS_UPDATE"))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Отменяем регистрацию BroadcastReceiver
+        unregisterReceiver(statusUpdateReceiver)
     }
 
     private fun getLocalIpAddress(): String {
