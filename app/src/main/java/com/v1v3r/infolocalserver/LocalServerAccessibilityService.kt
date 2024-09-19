@@ -1,6 +1,8 @@
 package com.v1v3r.infolocalserver
 
 import android.accessibilityservice.AccessibilityService
+import android.content.Intent
+import android.content.IntentFilter
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import fi.iki.elonen.NanoHTTPD
@@ -15,6 +17,7 @@ import java.net.NetworkInterface
 class LocalServerAccessibilityService : AccessibilityService() {
 
     private lateinit var server: LocalServer
+    private var isServerRunning: Boolean = false
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -23,9 +26,12 @@ class LocalServerAccessibilityService : AccessibilityService() {
         server = LocalServer(8080, this)
         try {
             server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
-            Log.d("LocalServerAccessibilityService", "Server started successfully")
+            isServerRunning = true
+            updateStatus("Local Server is running")
+            Log.d("LocalServerAccessibilityService", "Local server is running")
         } catch (e: IOException) {
             Log.e("LocalServerAccessibilityService", "Could not start server", e)
+            updateStatus("Local server is not working")
         }
     }
 
@@ -33,6 +39,8 @@ class LocalServerAccessibilityService : AccessibilityService() {
         super.onDestroy()
         Log.d("LocalServerAccessibilityService", "onDestroy called")
         server.stop()
+        isServerRunning = false
+        updateStatus("Local server is not working")
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -43,12 +51,17 @@ class LocalServerAccessibilityService : AccessibilityService() {
         // Необходимо для реализации AccessibilityService
     }
 
+    private fun updateStatus(status: String) {
+        val intent = Intent("com.v1v3r.infolocalserver.STATUS_UPDATE")
+        intent.putExtra("status", status)
+        sendBroadcast(intent)
+    }
+
     private class LocalServer(port: Int, private val context: Context) : NanoHTTPD(port) {
         override fun serve(session: IHTTPSession): Response {
             val cpuTemp = getCpuTemperature()
             val memoryUsage = getMemoryUsage()
 
-            // Форматируем вывод
             val response = """
                 <html>
                 <head>
@@ -111,23 +124,15 @@ class LocalServerAccessibilityService : AccessibilityService() {
             val memoryInfo = ActivityManager.MemoryInfo()
             activityManager.getMemoryInfo(memoryInfo)
 
-            // Общая память
             val totalMemory = memoryInfo.totalMem
-
-            // Свободная память
             val availableMemory = memoryInfo.availMem
-
-            // Занятая память: Общая память - Свободная память
             val usedMemory = totalMemory - availableMemory
 
-            // Процент использования памяти
             val memoryUsagePercent = (usedMemory.toDouble() / totalMemory) * 100
 
-            // Переводим занятое количество и общую память в гигабайты
             val usedMemoryGb = usedMemory / (1024.0 * 1024.0 * 1024.0)
             val totalMemoryGb = totalMemory / (1024.0 * 1024.0 * 1024.0)
 
-            // Форматируем вывод
             return String.format("%.2f GB / %.2f GB<br>(used %.0f%%)", usedMemoryGb, totalMemoryGb, memoryUsagePercent)
         }
 

@@ -8,7 +8,8 @@
         android:id="@+id/serverAddressTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/copyAddressButton"
         android:textSize="24sp"
         android:text="Server Address: " />
 
@@ -16,10 +17,19 @@
         android:id="@+id/copyAddressButton"
         android:layout_width="220dp"
         android:layout_height="80dp"
-        android:layout_below="@id/serverAddressTextView"
-        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
         android:layout_marginTop="16dp"
         android:text="Copy address"
         android:textSize="20sp"
         android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/serverStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/copyAddressButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:textSize="18sp"
+        android:text="Local server is not working" /> <!-- Default text -->
 </RelativeLayout>
