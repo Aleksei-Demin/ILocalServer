@@ -21,7 +21,6 @@ class LocalServerAccessibilityService : AccessibilityService() {
         super.onServiceConnected()
         Log.d("LocalServerAccessibilityService", "onServiceConnected called")
 
-        // Запуск локального сервера
         server = LocalServer(8080, this)
         try {
             server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
@@ -41,27 +40,24 @@ class LocalServerAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // Обработка событий сервиса доступности (если требуется)
+        // Необходимо для реализации AccessibilityService
     }
 
     override fun onInterrupt() {
-        // Реализация прерывания сервиса
+        // Необходимо для реализации AccessibilityService
     }
 
-    // Метод для отправки статуса
     private fun updateStatus(status: String) {
         val intent = Intent("com.v1v3r.infolocalserver.STATUS_UPDATE")
         intent.putExtra("status", status)
         sendBroadcast(intent)
     }
 
-    // Класс локального сервера
     private class LocalServer(port: Int, private val context: Context) : NanoHTTPD(port) {
         override fun serve(session: IHTTPSession): Response {
             val cpuTemp = getCpuTemperature()
             val memoryUsage = getMemoryUsage()
 
-            // Форматирование HTML ответа
             val response = """
                 <html>
                 <head>
@@ -76,7 +72,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
                             background-color: black;
                             color: white;
                             margin: 0;
-                            padding-top: 60px; /* Оставляем место для панели статуса */
+                            padding-top: 60px; /* Space for content below status bar */
                         }
                         .value {
                             margin: 40px 0;
@@ -90,7 +86,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
                             padding: 20px 0;
                             text-align: center;
                             border-bottom: 3px solid lightgrey;
-                            z-index: 1000; /* Панель статуса поверх контента */
+                            z-index: 1000; /* Ensures the status bar is on top */
                         }
                     </style>
                 </head>
@@ -107,20 +103,18 @@ class LocalServerAccessibilityService : AccessibilityService() {
             return newFixedLengthResponse(response)
         }
 
-        // Метод для получения температуры CPU
         private fun getCpuTemperature(): String {
             return try {
                 val reader = BufferedReader(FileReader("/sys/class/thermal/thermal_zone0/temp"))
                 val temp = reader.readLine().toDouble() / 1000
                 reader.close()
-                String.format("%.1f°C", temp) // Округляем до десятых
+                String.format("%.1f°C", temp)
             } catch (e: Exception) {
                 Log.e("LocalServerAccessibilityService", "Could not read CPU temperature", e)
                 "N/A"
             }
         }
 
-        // Метод для получения информации о памяти
         private fun getMemoryUsage(): String {
             val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             val memoryInfo = ActivityManager.MemoryInfo()
@@ -138,7 +132,6 @@ class LocalServerAccessibilityService : AccessibilityService() {
             return String.format("%.2f GB / %.2f GB<br>(used %.0f%%)", usedMemoryGb, totalMemoryGb, memoryUsagePercent)
         }
 
-        // Метод для получения локального IP-адреса
         private fun getLocalIpAddress(): String {
             try {
                 val en = NetworkInterface.getNetworkInterfaces()
@@ -153,7 +146,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
                     }
                 }
             } catch (ex: Exception) {
-                Log.e("LocalServerAccessibilityService", "Could not get local IP address", ex)
+                ex.printStackTrace()
             }
             return "127.0.0.1"
         }

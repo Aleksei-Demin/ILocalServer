@@ -1,5 +1,3 @@
-// Updated to handle both scenarios: running and stopping based on AccessibilityService status
-
 package com.v1v3r.infolocalserver
 
 import android.app.Service
@@ -21,6 +19,11 @@ class LocalServerService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("LocalServerService", "onStartCommand called")
+
+        // Останавливаем LocalServerAccessibilityService, если он запущен
+        stopService(Intent(this, LocalServerAccessibilityService::class.java))
+
+        // Запуск сервера
         server = LocalServer(8080, this)
         try {
             server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
@@ -30,14 +33,20 @@ class LocalServerService : Service() {
             Log.e("LocalServerService", "Could not start server", e)
             updateStatus("Local server is not working")
         }
+
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Log.d("LocalServerService", "onDestroy called")
+
+        // Останавливаем сервер
         server.stop()
         updateStatus("Local server is not working")
+
+        // Останавливаем LocalServerAccessibilityService, если он запущен
+        stopService(Intent(this, LocalServerAccessibilityService::class.java))
     }
 
     override fun onBind(intent: Intent?): IBinder? {
