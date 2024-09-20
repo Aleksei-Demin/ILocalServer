@@ -78,9 +78,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
                         body {
                             display: flex;
                             flex-direction: column;
-                            justify-content: space-between;
                             align-items: center;
-                            height: 100vh;
                             margin: 0;
                             text-align: center;
                             background-color: black;
@@ -89,12 +87,13 @@ class LocalServerAccessibilityService : AccessibilityService() {
                         }
                 
                         .content {
+                            flex-grow: 1;
+                            width: 100%;
                             display: flex;
                             flex-direction: column;
                             justify-content: center;
                             align-items: center;
-                            flex-grow: 1;
-                            width: 100%;
+                            height: center;
                         }
                 
                         .value {
@@ -108,7 +107,6 @@ class LocalServerAccessibilityService : AccessibilityService() {
                             text-align: center;
                             border-bottom: 3px solid lightgrey;
                             width: 100%;
-                            flex-shrink: 0; /* Запрещаем сжатие */
                         }
                 
                         .restart-btn {
@@ -122,13 +120,14 @@ class LocalServerAccessibilityService : AccessibilityService() {
                         }
                 
                         .address-info {
+                            position: fixed; /* Фиксируем нижнюю часть */
+                            bottom: 0; /* Прикрепляем к низу экрана */
+                            width: 100%;
                             background-color: black;
                             color: white;
                             padding: 10px 0;
                             text-align: center;
                             border-top: 3px solid lightgrey;
-                            width: 100%;
-                            flex-shrink: 0; /* Запрещаем сжатие */
                         }
                     </style>
                     <script>
@@ -147,11 +146,12 @@ class LocalServerAccessibilityService : AccessibilityService() {
                     </div>
                 
                     <div class="content">
+                        <button class="restart-btn" onclick="confirmRestart()">Reboot device</button>
+                        <br>
+                        <br>
                         <div class="value">CPU: ${cpuTemp}</div>
                         <div class="value">${batteryHtml}</div>
                         <div class="value">RAM: ${memoryUsage}</div>
-                        <br>
-                        <button class="restart-btn" onclick="confirmRestart()">Reboot device</button>
                     </div>
                 
                     <div class="address-info">
