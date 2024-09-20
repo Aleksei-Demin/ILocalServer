@@ -5,4 +5,4 @@
     android:accessibilityFlags="flagDefault"
     android:canRetrieveWindowContent="true"
     android:notificationTimeout="100"
-    android:settingsActivity="com.v1v3r.infolocalserver.MainActivity" />
+    android:settingsActivity="com.v1v3r.ilocalserver.MainActivity" />

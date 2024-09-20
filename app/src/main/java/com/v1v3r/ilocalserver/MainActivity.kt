@@ -1,4 +1,4 @@
-package com.v1v3r.infolocalserver
+package com.v1v3r.ilocalserver
 
 import android.content.BroadcastReceiver
 import android.content.ClipData
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         startService(Intent(this, LocalServerService::class.java))
 
         // Регистрируем BroadcastReceiver для получения обновлений статуса сервера
-        registerReceiver(statusUpdateReceiver, IntentFilter("com.v1v3r.infolocalserver.STATUS_UPDATE"))
+        registerReceiver(statusUpdateReceiver, IntentFilter("com.v1v3r.ilocalserver.STATUS_UPDATE"))
 
         // Обработка нажатия на кнопку "Restart server"
         restartServerButton.setOnClickListener {

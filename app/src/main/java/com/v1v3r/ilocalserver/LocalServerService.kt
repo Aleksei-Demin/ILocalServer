@@ -1,4 +1,4 @@
-package com.v1v3r.infolocalserver
+package com.v1v3r.ilocalserver
 
 import android.app.Service
 import android.content.Intent
@@ -55,7 +55,7 @@ class LocalServerService : Service() {
     }
 
     private fun updateStatus(status: String) {
-        val intent = Intent("com.v1v3r.infolocalserver.STATUS_UPDATE")
+        val intent = Intent("com.v1v3r.ilocalserver.STATUS_UPDATE")
         intent.putExtra("status", status)
         sendBroadcast(intent)
     }
@@ -68,7 +68,7 @@ class LocalServerService : Service() {
             val response = """
                 <html>
                 <head>
-                    <title>InfoLocalServer</title>
+                    <title>ILocalServer</title>
                     <style>
                         body {
                             display: flex;

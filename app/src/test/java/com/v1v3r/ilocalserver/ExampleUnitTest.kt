@@ -1,4 +1,4 @@
-package com.v1v3r.infolocalserver
+package com.v1v3r.ilocalserver
 
 import org.junit.Test
 

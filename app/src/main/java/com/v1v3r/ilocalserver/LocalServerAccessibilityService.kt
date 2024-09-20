@@ -1,4 +1,4 @@
-package com.v1v3r.infolocalserver
+package com.v1v3r.ilocalserver
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
@@ -48,7 +48,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
     }
 
     private fun updateStatus(status: String) {
-        val intent = Intent("com.v1v3r.infolocalserver.STATUS_UPDATE")
+        val intent = Intent("com.v1v3r.ilocalserver.STATUS_UPDATE")
         intent.putExtra("status", status)
         sendBroadcast(intent)
     }
@@ -61,7 +61,7 @@ class LocalServerAccessibilityService : AccessibilityService() {
             val response = """
                 <html>
                 <head>
-                    <title>InfoLocalServer</title>
+                    <title>ILocalServer</title>
                     <style>
                         body {
                             display: flex;

@@ -1,4 +1,4 @@
-package com.v1v3r.infolocalserver
+package com.v1v3r.ilocalserver
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.v1v3r.infolocalserver", appContext.packageName)
+        assertEquals("com.v1v3r.ilocalserver", appContext.packageName)
     }
 }

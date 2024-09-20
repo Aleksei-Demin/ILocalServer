@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "InfoLocalServer"
+rootProject.name = "ILocalServer"
 include(":app")

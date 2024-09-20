@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">InfoLocalServer</string>
-    <string name="accessibility_service_description">This service helps to run the local server in the background.</string>
+    <string name="app_name">ILocalServer</string>
+    <string name="accessibility_service_description">This service helps to run the local server in the background after restart device.</string>
 </resources>
