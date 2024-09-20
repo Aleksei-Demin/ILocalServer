@@ -78,29 +78,39 @@ class LocalServerAccessibilityService : AccessibilityService() {
                         body {
                             display: flex;
                             flex-direction: column;
-                            justify-content: center;
+                            justify-content: space-between;
                             align-items: center;
-                            min-height: 100vh;
+                            height: 100vh;
                             margin: 0;
                             text-align: center;
                             background-color: black;
                             color: white;
                             font-size: 4em;
                         }
+                
+                        .content {
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            flex-grow: 1;
+                            width: 100%;
+                        }
+                
                         .value {
                             margin: 20px 0;
                         }
+                
                         .status-bar {
-                            position: fixed;
-                            top: 0;
-                            width: 100vw;
                             background-color: black;
                             color: white;
-                            padding: 20px 0;
+                            padding: 10px 0;
                             text-align: center;
                             border-bottom: 3px solid lightgrey;
-                            z-index: 1000;
+                            width: 100%;
+                            flex-shrink: 0; /* Запрещаем сжатие */
                         }
+                
                         .restart-btn {
                             margin-top: 20px;
                             padding: 20px 30px;
@@ -110,16 +120,15 @@ class LocalServerAccessibilityService : AccessibilityService() {
                             border: none;
                             cursor: pointer;
                         }
+                
                         .address-info {
-                            position: fixed;
-                            bottom: 0;
-                            width: 100vw;
                             background-color: black;
                             color: white;
-                            padding: 20px 0;
+                            padding: 10px 0;
                             text-align: center;
                             border-top: 3px solid lightgrey;
-                            z-index: 1000;
+                            width: 100%;
+                            flex-shrink: 0; /* Запрещаем сжатие */
                         }
                     </style>
                     <script>
@@ -136,13 +145,18 @@ class LocalServerAccessibilityService : AccessibilityService() {
                     <div class="status-bar">
                         Server uptime:<br>${getServerUptime()}
                     </div>
-                    <div>
-                        <div class="value">CPU: $cpuTemp</div>
-                        <div class="value">$batteryHtml</div>
-                        <div class="value">RAM: $memoryUsage</div>
-                        <br><button class="restart-btn" onclick="confirmRestart()">Reboot device</button>
+                
+                    <div class="content">
+                        <div class="value">CPU: ${cpuTemp}</div>
+                        <div class="value">${batteryHtml}</div>
+                        <div class="value">RAM: ${memoryUsage}</div>
+                        <br>
+                        <button class="restart-btn" onclick="confirmRestart()">Reboot device</button>
                     </div>
-                    <div class="address-info">${getLocalIpAddress() + ":8080<br>Accessibility service is on"}</div>
+                
+                    <div class="address-info">
+                        ${getLocalIpAddress() + ":8080<br>Accessibility service is on"}
+                    </div>
                 </body>
                 </html>
             """.trimIndent()
