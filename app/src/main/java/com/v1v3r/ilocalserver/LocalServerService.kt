@@ -2,6 +2,7 @@ package com.v1v3r.ilocalserver
 
 import android.app.Service
 import android.content.Intent
+import android.os.BatteryManager
 import android.os.IBinder
 import android.util.Log
 import fi.iki.elonen.NanoHTTPD
@@ -16,14 +17,13 @@ import java.net.NetworkInterface
 class LocalServerService : Service() {
 
     private lateinit var server: LocalServer
+    private var serverStartTime: Long = 0
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("LocalServerService", "onStartCommand called")
 
-        // Останавливаем LocalServerAccessibilityService, если он запущен
-        stopService(Intent(this, LocalServerAccessibilityService::class.java))
+        serverStartTime = System.currentTimeMillis()  // Запоминаем время запуска сервера
 
-        // Запуск сервера
         startServer()
 
         return START_STICKY
@@ -44,8 +44,6 @@ class LocalServerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("LocalServerService", "onDestroy called")
-
-        // Останавливаем сервер
         server.stop()
         updateStatus("Local server is not working")
     }
@@ -60,10 +58,18 @@ class LocalServerService : Service() {
         sendBroadcast(intent)
     }
 
-    private class LocalServer(port: Int, private val context: Context) : NanoHTTPD(port) {
+    private inner class LocalServer(port: Int, private val context: Context) : NanoHTTPD(port) {
+
         override fun serve(session: IHTTPSession): Response {
             val cpuTemp = getCpuTemperature()
             val memoryUsage = getMemoryUsage()
+            val batteryLevel = getBatteryLevel()
+
+            val batteryHtml = if (batteryLevel != "N/A") {
+                "<div class=\"value\">Battery: $batteryLevel</div>"
+            } else {
+                ""
+            }
 
             val response = """
                 <html>
@@ -72,42 +78,113 @@ class LocalServerService : Service() {
                     <style>
                         body {
                             display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            margin: 0;
+                            text-align: center;
+                            background-color: black;
+                            color: white;
+                            font-size: 4em;
+                        }
+                        .content {
+                            flex-grow: 1;
+                            width: 100%;
+                            display: flex;
+                            flex-direction: column;
                             justify-content: center;
                             align-items: center;
-                            font-size: 4em;
-                            text-align: center;
-                            background-color: black;
-                            color: white;
-                            margin: 0;
-                            padding-top: 60px; /* Space for content below status bar */
                         }
                         .value {
-                            margin: 40px 0;
+                            margin: 20px 0;
                         }
                         .status-bar {
-                            position: fixed;
-                            top: 0;
-                            width: 100vw;
                             background-color: black;
                             color: white;
-                            padding: 20px 0;
+                            padding: 10px 0;
                             text-align: center;
                             border-bottom: 3px solid lightgrey;
-                            z-index: 1000; /* Ensures the status bar is on top */
+                            width: 100%;
+                        }
+                        .restart-btn {
+                            margin-top: 20px;
+                            padding: 20px 30px;
+                            font-size: 0.8em;
+                            background-color: grey;
+                            color: white;
+                            border: none;
+                            cursor: pointer;
+                        }
+                        .address-info {
+                            position: fixed;
+                            bottom: 0;
+                            width: 100%;
+                            background-color: black;
+                            color: white;
+                            padding: 10px 0;
+                            text-align: center;
+                            border-top: 3px solid lightgrey;
                         }
                     </style>
+                    <script>
+                        function confirmRestart() {
+                            if (confirm('Are you sure you want to reboot the device?')) {
+                                fetch('/restart')
+                                    .then(() => alert('Rebooting the device...'))
+                                    .catch(() => alert('Failed to reboot the device'));
+                            }
+                        }
+                    </script>
                 </head>
                 <body>
-                    <div class="status-bar">${getLocalIpAddress() + ":8080<br>Accessibility service is off"}</div>
-                    <div>
+                    <div class="status-bar">
+                        Server uptime:<br>${getServerUptime()}
+                    </div>
+                    <div class="content">
+                        <button class="restart-btn" onclick="confirmRestart()">Reboot device</button>
+                        <br>
+                        <br>
                         <div class="value">CPU: $cpuTemp</div>
+                        <div class="value">$batteryHtml</div>
                         <div class="value">RAM: $memoryUsage</div>
+                    </div>
+                    <div class="address-info">
+                        ${getLocalIpAddress() + ":8080<br>Accessibility service is off"}
                     </div>
                 </body>
                 </html>
             """.trimIndent()
 
+            if (session.uri == "/restart") {
+                rebootDevice()
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "Device is rebooting...")
+            }
+
             return newFixedLengthResponse(response)
+        }
+
+        private fun getServerUptime(): String {
+            val currentTime = System.currentTimeMillis()
+            val uptimeMillis = currentTime - serverStartTime
+
+            val seconds = (uptimeMillis / 1000) % 60
+            val minutes = (uptimeMillis / (1000 * 60)) % 60
+            val hours = (uptimeMillis / (1000 * 60 * 60)) % 24
+            val days = uptimeMillis / (1000 * 60 * 60 * 24)
+
+            return when {
+                days > 0 -> "$days days $hours hours"
+                hours > 0 -> "$hours hours $minutes minutes"
+                else -> "$minutes minutes $seconds seconds"
+            }
+        }
+
+        private fun rebootDevice() {
+            try {
+                val process = Runtime.getRuntime().exec(arrayOf("su", "-c", "reboot"))
+                process.waitFor()
+            } catch (e: Exception) {
+                Log.e("LocalServerService", "Reboot failed", e)
+            }
         }
 
         private fun getCpuTemperature(): String {
@@ -156,6 +233,17 @@ class LocalServerService : Service() {
                 ex.printStackTrace()
             }
             return "127.0.0.1"
+        }
+
+        private fun getBatteryLevel(): String {
+            val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+            val batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+
+            return if (batteryLevel != Integer.MIN_VALUE) {
+                "$batteryLevel%"
+            } else {
+                "N/A"
+            }
         }
     }
 }
