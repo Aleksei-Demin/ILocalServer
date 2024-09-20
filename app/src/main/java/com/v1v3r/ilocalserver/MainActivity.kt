@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         serverStatusTextView = findViewById(R.id.serverStatusTextView)
         val copyAddressButton: Button = findViewById(R.id.copyAddressButton)
         val openServerButton: Button = findViewById(R.id.openServerButton)
-        val restartServerButton: Button = findViewById(R.id.restartServerButton)
 
         // Получение IP-адреса сервера и установка в TextView
         val serverAddress = getLocalIpAddress() + ":8080"
@@ -62,11 +61,6 @@ class MainActivity : AppCompatActivity() {
 
         // Регистрируем BroadcastReceiver для получения обновлений статуса сервера
         registerReceiver(statusUpdateReceiver, IntentFilter("com.v1v3r.ilocalserver.STATUS_UPDATE"))
-
-        // Обработка нажатия на кнопку "Restart server"
-        restartServerButton.setOnClickListener {
-            restartServer()
-        }
 
         // Инициализация статуса сервера
         updateServerStatus()
