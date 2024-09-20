@@ -98,7 +98,7 @@ class LocalServerService : Service() {
                     </style>
                 </head>
                 <body>
-                    <div class="status-bar">${getLocalIpAddress() + ":8080 (Accessibility service is off)"}</div>
+                    <div class="status-bar">${getLocalIpAddress() + ":8080<br>Accessibility service is off"}</div>
                     <div>
                         <div class="value">CPU: $cpuTemp</div>
                         <div class="value">RAM: $memoryUsage</div>

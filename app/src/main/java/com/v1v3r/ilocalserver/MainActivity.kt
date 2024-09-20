@@ -6,24 +6,19 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
+import androidx.core.content.ContextCompat
 import java.net.Inet4Address
 import java.net.NetworkInterface
-import java.util.concurrent.TimeUnit
 import android.app.ActivityManager
-import android.view.accessibility.AccessibilityManager
 import android.accessibilityservice.AccessibilityServiceInfo
-val feedbackType = AccessibilityServiceInfo.FEEDBACK_ALL_MASK
-
-
+import android.view.accessibility.AccessibilityManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         val serverAddressTextView: TextView = findViewById(R.id.serverAddressTextView)
         serverStatusTextView = findViewById(R.id.serverStatusTextView)
         val copyAddressButton: Button = findViewById(R.id.copyAddressButton)
+        val openServerButton: Button = findViewById(R.id.openServerButton)
         val restartServerButton: Button = findViewById(R.id.restartServerButton)
 
         // Получение IP-адреса сервера и установка в TextView
@@ -51,7 +47,14 @@ class MainActivity : AppCompatActivity() {
         // Обработка нажатия на кнопку "Copy address"
         copyAddressButton.setOnClickListener {
             copyToClipboard(serverAddress)
-            Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Address copied", Toast.LENGTH_SHORT).show()
+        }
+
+        // Обработка нажатия на кнопку "Open server"
+        openServerButton.setOnClickListener {
+            val uri = Uri.parse("http://$serverAddress")
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            startActivity(intent)
         }
 
         // Запуск LocalServerService при создании MainActivity
@@ -67,7 +70,6 @@ class MainActivity : AppCompatActivity() {
 
         // Инициализация статуса сервера
         updateServerStatus()
-
     }
 
     override fun onStart() {
@@ -87,12 +89,15 @@ class MainActivity : AppCompatActivity() {
         when {
             isAccessibilityServiceRunning(LocalServerAccessibilityService::class.java) -> {
                 serverStatusTextView.text = "Local server is working\nvia accessibility service"
+                serverStatusTextView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_light))
             }
             isServiceRunning(LocalServerService::class.java) -> {
                 serverStatusTextView.text = "Local server is working"
+                serverStatusTextView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_light))
             }
             else -> {
                 serverStatusTextView.text = "Local server is not working"
+                serverStatusTextView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_light))
             }
         }
     }
