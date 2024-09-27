@@ -1,4 +1,4 @@
-[Нажмите сюда для загрузки / Click to download APK - ILocalServer](https://github.com/Aleksei-Demin/ILocalServer/raw/refs/heads/master/ILocalServer.apk)
+[Нажмите сюда для загрузки ILocalServer.apk | Click to download ILocalServer.apk](https://github.com/Aleksei-Demin/ILocalServer/raw/refs/heads/master/ILocalServer.apk)
 
 To prevent the application from being closed by the system after a while, you need to go to the "Accessibility" - "Installed services" section immediately after installation and enable the "ILocalServer" service there, after which you can open the application and go to the server.
 If the "Accessibility service is on" is written at the bottom of the server page, then the application should work constantly without being closed by the Android system.
