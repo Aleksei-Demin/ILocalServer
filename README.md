@@ -5,7 +5,7 @@
 Если внизу на странице сервера будет написано "Accessibility service is off", то система скорее всего закроет приложение через некоторое время.
 Кнопка "Reboot device" работает только при наличии root прав.
 
-[Click to download ILocalServer.apk](https://github.com/Aleksei-Demin/ILocalServer/raw/refs/heads/master/ILocalServer.apk)
+[Click here to download ILocalServer.apk](https://github.com/Aleksei-Demin/ILocalServer/raw/refs/heads/master/ILocalServer.apk)
 
 To prevent the application from being closed by the system after a while, you need to go to the "Accessibility" - "Installed services" section immediately after installation and enable the "ILocalServer" service there, after which you can open the application and go to the server.
 If the "Accessibility service is on" is written at the bottom of the server page, then the application should work constantly without being closed by the Android system.
